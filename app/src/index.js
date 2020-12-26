@@ -35,13 +35,19 @@ const App = {
     const { createStar } = this.meta.methods;
     const name = document.getElementById("starName").value;
     const id = document.getElementById("starId").value;
-    await createStar(name, id).send({from: this.account});
+    const symbol = document.getElementById("starSymbol").value;
+    await createStar(name, symbol, id).send({from: this.account });
     App.setStatus("New Star Owner is " + this.account + ".");
   },
 
   // Implement Task 4 Modify the front end of the DAPP
   lookUp: async function (){
-    
+    const { lookUptokenIdToStarInfo } = this.meta.methods;
+    const id = document.getElementById("lookid").value;
+    if(id === '0') return;
+    const result = await lookUptokenIdToStarInfo(id).call();
+    document.getElementById('status').textContent =  `Star ${id}: ${result}`;
+    return result;
   }
 
 };
@@ -56,7 +62,7 @@ window.addEventListener("load", async function() {
   } else {
     console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live",);
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    App.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"),);
+    App.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"),);
   }
 
   App.start();
